@@ -114,7 +114,10 @@
         .product-price { color: #7c3aed; font-weight: 900; }
         .product-barcode { font-size: 0.7rem; color: #6b7280; font-family: monospace; }
         .product-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
-        .btn-print { background: linear-gradient(135deg, #60a5fa, #3b82f6); color: white; padding: 0.5rem 1rem; border-radius: 0.75rem; border: none; border-bottom: 3px solid #1d4ed8; cursor: pointer; font-weight: 900; font-family: inherit; }
+        .btn-admin-basket { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg,#4ade80,#22c55e); border: none; border-bottom: 3px solid #15803d; cursor: pointer; font-size: 1.15rem; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; }
+        .btn-admin-print  { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg,#60a5fa,#3b82f6); border: none; border-bottom: 3px solid #1d4ed8; cursor: pointer; font-size: 1.15rem; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; }
+        .btn-admin-delete { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg,#fb7185,#ef4444); border: none; border-bottom: 3px solid #b91c1c; cursor: pointer; font-size: 1.15rem; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; }
+        .btn-admin-basket:active, .btn-admin-print:active, .btn-admin-delete:active { transform: scale(0.9); }
 
         /* Modal */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1.25rem; }
@@ -133,6 +136,40 @@
         .modal-btn-secondary { flex: 1; padding: 1rem; background: #f3f4f6; color: #374151; border: none; border-radius: 1.25rem; border-bottom: 4px solid #d1d5db; font-weight: 900; font-size: 1rem; cursor: pointer; font-family: inherit; }
         .modal-btn-danger    { flex: 1; padding: 1rem; background: linear-gradient(135deg, #fb7185, #ef4444); color: white; border: none; border-radius: 1.25rem; border-bottom: 4px solid #b91c1c; font-weight: 900; font-size: 1rem; cursor: pointer; font-family: inherit; }
         .modal-btn-add       { flex: 1; padding: 1rem; background: linear-gradient(135deg, #60a5fa, #3b82f6); color: white; border: none; border-radius: 1.25rem; border-bottom: 4px solid #1d4ed8; font-weight: 900; font-size: 1rem; cursor: pointer; font-family: inherit; }
+
+        /* Category browser – drill-down */
+        .card-catalog { border-color: #f9a8d4; box-shadow: 0 6px 0 #ec4899; }
+        .cat-big-btn  { display: flex; align-items: center; width: 100%; border: 3px solid; border-radius: 1.25rem; padding: 1rem 1.25rem; cursor: pointer; font-family: inherit; transition: transform 0.1s; background: white; }
+        .cat-big-btn:active { transform: scale(0.97); }
+        .cat-big-emoji { font-size: 2rem; margin-right: 1rem; }
+        .cat-big-label { font-size: 1.15rem; font-weight: 900; flex: 1; text-align: left; }
+        .cat-big-arrow { font-size: 1.5rem; font-weight: 900; opacity: 0.5; }
+        .cat-btn-fruits  { border-color: #fb923c; background: linear-gradient(135deg,#fff7ed,#ffedd5); color: #c2410c; box-shadow: 0 4px 0 #fb923c; }
+        .cat-btn-veggies { border-color: #4ade80; background: linear-gradient(135deg,#f0fdf4,#dcfce7); color: #15803d; box-shadow: 0 4px 0 #4ade80; }
+        .cat-btn-bakery  { border-color: #fbbf24; background: linear-gradient(135deg,#fefce8,#fef9c3); color: #92400e; box-shadow: 0 4px 0 #fbbf24; }
+        .cat-back-btn { background: #f3f4f6; border: 2.5px solid #d1d5db; border-radius: 2rem; padding: 0.5rem 1.1rem; font-weight: 900; font-size: 0.9rem; cursor: pointer; font-family: inherit; color: #374151; }
+        .cat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.5rem; }
+        @media(min-width:480px){ .cat-grid { grid-template-columns: repeat(4,1fr); } }
+        .cat-item { background: white; border: 2.5px solid #e5e7eb; border-radius: 1rem; padding: 0.65rem 0.3rem; text-align: center; cursor: pointer; transition: transform 0.1s; font-family: inherit; width: 100%; }
+        .cat-item:active { transform: scale(0.93); }
+        .cat-item-emoji { font-size: 1.75rem; line-height: 1; display: block; margin-bottom: 0.2rem; }
+        .cat-item-name  { font-size: 0.68rem; font-weight: 900; color: #1f2937; display: block; line-height: 1.2; margin-bottom: 0.15rem; }
+        .cat-item-price { font-size: 0.75rem; font-weight: 900; color: #059669; display: block; }
+        .cat-item:hover { border-color: #a78bfa; background: #faf5ff; }
+
+        /* Qty popup */
+        .qty-modal-box { background: white; border-radius: 2rem; padding: 1.75rem; width: 100%; max-width: 320px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); border: 4px solid #fbbf24; text-align: center; animation: popIn 0.2s ease-out; }
+        .qty-modal-emoji { font-size: 3.5rem; margin-bottom: 0.3rem; line-height: 1; }
+        .qty-modal-name  { font-size: 1rem; font-weight: 900; color: #1f2937; margin-bottom: 0.2rem; }
+        .qty-modal-price { font-size: 0.95rem; font-weight: 900; color: #059669; margin-bottom: 1.1rem; }
+        .qty-stepper { display: flex; align-items: center; justify-content: center; gap: 1.1rem; margin-bottom: 1rem; }
+        .qty-step-btn { width: 52px; height: 52px; border-radius: 50%; border: none; font-size: 1.75rem; font-weight: 900; cursor: pointer; font-family: inherit; transition: transform 0.1s; line-height: 1; }
+        .qty-step-btn:active { transform: scale(0.88); }
+        .qty-step-minus { background: linear-gradient(135deg,#fef3c7,#fde68a); color: #d97706; border: 3px solid #fde047; }
+        .qty-step-plus  { background: linear-gradient(135deg,#dcfce7,#bbf7d0); color: #16a34a; border: 3px solid #86efac; }
+        .qty-step-num   { font-size: 2.5rem; font-weight: 900; color: #1f2937; min-width: 48px; }
+        .qty-modal-total { background: linear-gradient(135deg,#fef9c3,#fef3c7); border: 3px solid #fde047; border-radius: 1rem; padding: 0.6rem; margin-bottom: 1.25rem; font-size: 1.1rem; font-weight: 900; color: #92400e; }
+        .qty-modal-actions { display: flex; gap: 0.75rem; }
     </style>
 </head>
 <body>
@@ -164,6 +201,38 @@
                 <div id="camera-section" class="camera-section hidden">
                     <div id="scanner-container"></div>
                     <button class="close-camera-btn" onclick="stopCamera()">✕ Close Scanner</button>
+                </div>
+            </div>
+
+            <div class="card card-catalog">
+                <h2>🏪 Quick Add</h2>
+
+                <!-- Level 1: category picker -->
+                <div id="cat-home">
+                    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+                        <button class="cat-big-btn cat-btn-fruits"  onclick="showCat('fruits')">
+                            <span class="cat-big-emoji">🍎</span>
+                            <span class="cat-big-label">Fruits</span>
+                            <span class="cat-big-arrow">›</span>
+                        </button>
+                        <button class="cat-big-btn cat-btn-veggies" onclick="showCat('veggies')">
+                            <span class="cat-big-emoji">🥦</span>
+                            <span class="cat-big-label">Vegetables</span>
+                            <span class="cat-big-arrow">›</span>
+                        </button>
+                        <button class="cat-big-btn cat-btn-bakery"  onclick="showCat('bakery')">
+                            <span class="cat-big-emoji">🥐</span>
+                            <span class="cat-big-label">Bakery</span>
+                            <span class="cat-big-arrow">›</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Level 2: items inside a category -->
+                <div id="cat-detail" class="hidden">
+                    <button class="cat-back-btn" onclick="backToCats()">← Back</button>
+                    <div id="cat-detail-title" style="font-size:1.1rem;font-weight:900;color:#1f2937;margin:0.75rem 0 0.75rem;"></div>
+                    <div id="cat-detail-grid" class="cat-grid"></div>
                 </div>
             </div>
 
@@ -243,6 +312,25 @@
         </div>
     </div>
 
+    <!-- Qty popup (catalog quick-add) -->
+    <div class="modal-overlay hidden" id="qty-modal">
+        <div class="qty-modal-box">
+            <div class="qty-modal-emoji" id="qm-emoji">🍎</div>
+            <div class="qty-modal-name"  id="qm-name">Apple</div>
+            <div class="qty-modal-price" id="qm-price">£0.45 each</div>
+            <div class="qty-stepper">
+                <button class="qty-step-btn qty-step-minus" onclick="qtyStep(-1)">−</button>
+                <span   class="qty-step-num" id="qm-qty">1</span>
+                <button class="qty-step-btn qty-step-plus"  onclick="qtyStep(1)">+</button>
+            </div>
+            <div class="qty-modal-total" id="qm-total">Total: £0.45</div>
+            <div class="qty-modal-actions">
+                <button class="modal-btn-primary" onclick="confirmQtyAdd()">🛒 Add to Basket</button>
+                <button class="modal-btn-secondary" onclick="closeQtyModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Product modal -->
     <div class="modal-overlay hidden" id="product-modal">
         <div class="modal-box">
@@ -294,6 +382,142 @@
 
     <script>
         const SHOP_NAME = "Karim's Corner Shop";
+
+        // ── Catalog (pre-loaded categories) ───────────────────
+        const CATALOG = {
+            fruits: [
+                { emoji:'🍎', name:'Apple',        price:0.45 },
+                { emoji:'🍊', name:'Orange',        price:0.55 },
+                { emoji:'🍋', name:'Lemon',         price:0.40 },
+                { emoji:'🍋‍🟩', name:'Lime',         price:0.40 },
+                { emoji:'🍇', name:'Grapes',        price:0.89 },
+                { emoji:'🍓', name:'Strawberries',  price:0.79 },
+                { emoji:'🫐', name:'Blueberries',   price:0.95 },
+                { emoji:'🍑', name:'Peach',         price:0.65 },
+                { emoji:'🍒', name:'Cherries',      price:0.85 },
+                { emoji:'🥭', name:'Mango',         price:0.99 },
+                { emoji:'🍍', name:'Pineapple',     price:0.99 },
+                { emoji:'🍈', name:'Melon',         price:0.89 },
+                { emoji:'🍉', name:'Watermelon',    price:0.99 },
+                { emoji:'🍐', name:'Pear',          price:0.55 },
+                { emoji:'🥝', name:'Kiwi',          price:0.50 },
+                { emoji:'🍌', name:'Banana',        price:0.35 },
+                { emoji:'🫒', name:'Plum',          price:0.45 },
+                { emoji:'🥥', name:'Coconut',       price:0.99 },
+                { emoji:'🍏', name:'Green Apple',   price:0.45 },
+                { emoji:'🍅', name:'Tomato',        price:0.40 },
+            ],
+            veggies: [
+                { emoji:'🥦', name:'Broccoli',      price:0.79 },
+                { emoji:'🥕', name:'Carrot',        price:0.45 },
+                { emoji:'🧅', name:'Onion',         price:0.39 },
+                { emoji:'🥔', name:'Potato',        price:0.55 },
+                { emoji:'🌽', name:'Sweetcorn',     price:0.65 },
+                { emoji:'🥒', name:'Cucumber',      price:0.69 },
+                { emoji:'🫑', name:'Bell Pepper',   price:0.79 },
+                { emoji:'🧄', name:'Garlic',        price:0.49 },
+                { emoji:'🥬', name:'Lettuce',       price:0.75 },
+                { emoji:'🌶️', name:'Chilli',        price:0.55 },
+                { emoji:'🥑', name:'Avocado',       price:0.89 },
+                { emoji:'🍆', name:'Aubergine',     price:0.85 },
+                { emoji:'🫛', name:'Courgette',     price:0.69 },
+                { emoji:'🍄', name:'Mushroom',      price:0.79 },
+                { emoji:'🥗', name:'Spinach',       price:0.85 },
+                { emoji:'🥜', name:'Peas',          price:0.65 },
+                { emoji:'🌿', name:'Celery',        price:0.65 },
+                { emoji:'🫚', name:'Leek',          price:0.75 },
+            ],
+            bakery: [
+                { emoji:'🥐', name:'Croissant',     price:0.45 },
+                { emoji:'🍞', name:'White Loaf',    price:0.89 },
+                { emoji:'🥖', name:'Baguette',      price:0.65 },
+                { emoji:'🥨', name:'Pretzel',       price:0.55 },
+                { emoji:'🧁', name:'Muffin',        price:0.79 },
+                { emoji:'🍩', name:'Doughnut',      price:0.55 },
+                { emoji:'🥯', name:'Bagel',         price:0.69 },
+                { emoji:'🫓', name:'Flatbread',     price:0.59 },
+                { emoji:'🍰', name:'Cake Slice',    price:0.99 },
+                { emoji:'🥧', name:'Pie Slice',     price:1.29 },
+                { emoji:'🧇', name:'Waffle',        price:0.75 },
+                { emoji:'🍪', name:'Cookie',        price:0.45 },
+                { emoji:'🥞', name:'Pancakes',      price:0.85 },
+                { emoji:'🍫', name:'Pain au Choc',  price:0.55 },
+                { emoji:'🥐', name:'Almond Crois.', price:0.75 },
+                { emoji:'🎂', name:'Birthday Cake', price:3.49 },
+            ],
+        };
+
+        // Give each catalog item a stable id (negative to avoid clash with user products)
+        let catIdCounter = -1;
+        Object.values(CATALOG).forEach(arr => arr.forEach(item => { item.id = catIdCounter--; }));
+
+        const CAT_LABELS = {
+            fruits:  '🍎 Fruits',
+            veggies: '🥦 Vegetables',
+            bakery:  '🥐 Bakery',
+        };
+
+        function buildCatalogGrids() {} // grids now built on demand
+
+        function showCat(key) {
+            document.getElementById('cat-home').classList.add('hidden');
+            document.getElementById('cat-detail').classList.remove('hidden');
+            document.getElementById('cat-detail-title').textContent = CAT_LABELS[key];
+            document.getElementById('cat-detail-grid').innerHTML =
+                CATALOG[key].map(item => `
+                    <button class="cat-item" onclick='openQtyModal(${item.id})'>
+                        <span class="cat-item-emoji">${item.emoji}</span>
+                        <span class="cat-item-name">${item.name}</span>
+                        <span class="cat-item-price">£${item.price.toFixed(2)}</span>
+                    </button>`).join('');
+        }
+
+        function backToCats() {
+            document.getElementById('cat-detail').classList.add('hidden');
+            document.getElementById('cat-home').classList.remove('hidden');
+        }
+
+        // ── Qty modal ──────────────────────────────────────────
+        let qmItem = null;
+        let qmQty  = 1;
+
+        function openQtyModal(id) {
+            qmItem = Object.values(CATALOG).flat().find(i => i.id === id);
+            if (!qmItem) return;
+            qmQty = 1;
+            document.getElementById('qm-emoji').textContent = qmItem.emoji;
+            document.getElementById('qm-name').textContent  = qmItem.name;
+            document.getElementById('qm-price').textContent = '£' + qmItem.price.toFixed(2) + ' each';
+            updateQtyDisplay();
+            document.getElementById('qty-modal').classList.remove('hidden');
+        }
+
+        function closeQtyModal() {
+            document.getElementById('qty-modal').classList.add('hidden');
+            qmItem = null; qmQty = 1;
+        }
+
+        function qtyStep(delta) {
+            qmQty = Math.max(1, qmQty + delta);
+            updateQtyDisplay();
+        }
+
+        function updateQtyDisplay() {
+            document.getElementById('qm-qty').textContent   = qmQty;
+            document.getElementById('qm-total').textContent = 'Total: £' + (qmItem.price * qmQty).toFixed(2);
+        }
+
+        function confirmQtyAdd() {
+            if (!qmItem) return;
+            // Use catalog item as a product (may already be in basket)
+            const prod = { id: qmItem.id, name: qmItem.emoji + ' ' + qmItem.name, price: qmItem.price, barcode: 'CAT-' + qmItem.id };
+            const existing = basket.find(i => i.id === prod.id);
+            if (existing) { existing.qty += qmQty; }
+            else          { basket.push({ ...prod, qty: qmQty }); }
+            playBeep();
+            renderBasket();
+            closeQtyModal();
+        }
 
         let products = JSON.parse(localStorage.getItem('tillProducts')) || [
             { id: 1, name: 'Milk',   price: 1.50, barcode: '5000000000000' },
@@ -756,6 +980,13 @@
             setTimeout(() => pw.print(), 250);
         }
 
+        function addProductToBasket(id) {
+            const p = products.find(p => p.id === id);
+            if (!p) return;
+            addToBasket(p);
+            playBeep();
+        }
+
         function renderProducts() {
             document.getElementById('products-list').innerHTML = products.length === 0
                 ? '<p style="color:#9ca3af;text-align:center;padding:1rem;">No products yet</p>'
@@ -767,8 +998,9 @@
                         <div class="product-barcode">${p.barcode}</div>
                     </div>
                     <div class="product-actions">
-                        <button class="btn-print" onclick='printBarcode(${JSON.stringify(p)})'>Print</button>
-                        <button class="btn-delete" onclick="deleteProduct(${p.id})">Delete</button>
+                        <button class="btn-admin-basket" onclick="addProductToBasket(${p.id})" title="Add to basket">🛒</button>
+                        <button class="btn-admin-print"  onclick='printBarcode(${JSON.stringify(p)})'  title="Print barcode">🖨️</button>
+                        <button class="btn-admin-delete" onclick="deleteProduct(${p.id})"              title="Delete">🗑️</button>
                     </div>
                 </div>
             `).join('');
@@ -776,6 +1008,7 @@
 
         renderBasket();
         renderProducts();
+        buildCatalogGrids();
     </script>
 </body>
 </html>

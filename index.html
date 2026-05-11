@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supermarket Till</title>
+    <title>Karim's Corner Shop</title>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 1rem; }
         .container { max-width: 800px; margin: 0 auto; }
+
+        /* Shop header */
+        .shop-header { text-align: center; margin-bottom: 1.5rem; }
+        .shop-header h1 { color: white; font-size: 1.75rem; font-weight: 900; text-shadow: 0 2px 8px rgba(0,0,0,0.3); letter-spacing: 0.5px; }
+        .shop-header p { color: rgba(255,255,255,0.8); font-size: 0.875rem; margin-top: 0.25rem; }
+
         .mode-toggle { display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; }
         .btn-mode { padding: 1rem 2rem; border: none; border-radius: 0.75rem; font-weight: bold; cursor: pointer; }
         .btn-mode.active { background: white; color: #7c3aed; }
@@ -17,48 +23,79 @@
         .content { display: none; }
         .content.active { display: block; }
         .card { background: white; border-radius: 1rem; padding: 2rem; margin-bottom: 1.5rem; }
-        h2 { font-size: 1.875rem; color: #1f2937; margin-bottom: 1.5rem; }
+        h2 { font-size: 1.75rem; color: #1f2937; margin-bottom: 1.5rem; }
         .input-group { display: flex; flex-direction: column; gap: 1rem; }
         input { padding: 1rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; font-size: 1rem; }
         input:focus { outline: none; border-color: #7c3aed; }
         .btn { padding: 1rem; border: none; border-radius: 0.75rem; font-weight: bold; cursor: pointer; }
-        .btn-large { width: 100%; padding: 1.5rem; font-size: 1.25rem; }
-        .btn-scan { background: linear-gradient(to right, #3b82f6, #1d4ed8); color: white; }
+        .btn-large { width: 100%; padding: 1.5rem; font-size: 1.1rem; }
+        .btn-scan    { background: linear-gradient(to right, #3b82f6, #1d4ed8); color: white; }
         .btn-proceed { background: linear-gradient(to right, #9333ea, #ec4899); color: white; width: 100%; }
-        .btn-payment { background: linear-gradient(to right, #4ade80, #22c55e); color: white; padding: 1.5rem; font-size: 1.5rem; font-weight: bold; width: 100%; margin-bottom: 0.5rem; border: none; border-radius: 0.75rem; cursor: pointer; }
-        .btn-back { background: #9ca3af; color: white; width: 100%; }
-        .btn-add { background: linear-gradient(to right, #10b981, #059669); color: white; width: 100%; }
-        .btn-delete { background: #ef4444; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; font-weight: bold; }
-        .btn-remove { background: #ef4444; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; font-weight: bold; }
+        .btn-back    { background: #9ca3af; color: white; width: 100%; }
+        .btn-add     { background: linear-gradient(to right, #10b981, #059669); color: white; width: 100%; }
+        .btn-delete  { background: #ef4444; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; font-weight: bold; }
+        .btn-remove  { background: #ef4444; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; font-weight: bold; }
+        .btn-new-sale { background: linear-gradient(to right, #9333ea, #ec4899); color: white; width: 100%; padding: 1.25rem; font-size: 1.1rem; font-weight: bold; border: none; border-radius: 0.75rem; cursor: pointer; margin-top: 1rem; }
+        .btn-print-receipt { background: #1f2937; color: white; width: 100%; padding: 1rem; font-size: 1rem; font-weight: bold; border: none; border-radius: 0.75rem; cursor: pointer; margin-top: 0.5rem; }
+
+        /* Payment buttons */
+        .btn-payment { background: linear-gradient(to right, #4ade80, #22c55e); color: white; padding: 1.25rem; font-size: 1.35rem; font-weight: bold; width: 100%; border: none; border-radius: 0.75rem; cursor: pointer; }
+        .btn-custom  { background: linear-gradient(to right, #f59e0b, #d97706); color: white; padding: 1.25rem; font-size: 1.1rem; font-weight: bold; width: 100%; border: none; border-radius: 0.75rem; cursor: pointer; }
+
+        /* Basket */
         .basket-item { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to right, #f0fdf4, #dbeafe); padding: 1rem; border-radius: 0.5rem; border: 2px solid #86efac; margin-bottom: 0.75rem; }
-        .basket-item h3 { font-size: 1.125rem; font-weight: bold; margin: 0; }
-        .basket-item-price { color: #059669; font-weight: bold; }
+        .basket-item h3 { font-size: 1rem; font-weight: bold; margin: 0; }
+        .basket-item-price { color: #059669; font-weight: bold; font-size: 0.95rem; }
         .total-section { border-top: 4px solid #d8b4fe; padding-top: 1.5rem; margin-top: 1.5rem; }
         .total-amount { font-size: 3rem; font-weight: bold; background: linear-gradient(to right, #9333ea, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 1.5rem; }
         .empty-message { text-align: center; color: #9ca3af; font-size: 1.25rem; padding: 2rem; }
         .hidden { display: none; }
 
+        /* Change display */
+        .change-display { background: linear-gradient(135deg, #d1fae5, #a7f3d0); border: 3px solid #34d399; border-radius: 1rem; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem; }
+        .change-label { font-size: 1rem; color: #065f46; font-weight: 600; margin-bottom: 0.25rem; }
+        .change-amount { font-size: 3.5rem; font-weight: 900; color: #059669; line-height: 1; }
+        .tendered-label { font-size: 0.875rem; color: #6b7280; margin-top: 0.5rem; }
+
+        /* Receipt */
+        .receipt { background: #fffef7; border: 2px dashed #d1d5db; border-radius: 0.75rem; padding: 1.25rem; font-family: 'Courier New', monospace; font-size: 0.8rem; color: #1f2937; }
+        .receipt-header { text-align: center; margin-bottom: 0.75rem; }
+        .receipt-shop { font-size: 1rem; font-weight: 900; letter-spacing: 1px; }
+        .receipt-sub { font-size: 0.7rem; color: #6b7280; }
+        .receipt-divider { border: none; border-top: 1px dashed #9ca3af; margin: 0.5rem 0; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 0.2rem; }
+        .receipt-row.bold { font-weight: bold; }
+        .receipt-row.total { font-size: 0.95rem; font-weight: 900; }
+        .receipt-row.change { color: #059669; font-weight: bold; }
+        .receipt-footer { text-align: center; margin-top: 0.75rem; font-size: 0.7rem; color: #6b7280; }
+
         /* Camera */
         .camera-section { border-radius: 0.75rem; overflow: hidden; margin-top: 1rem; background: #000; }
         #scanner-container { width: 100%; }
         #scanner-container video { width: 100% !important; height: 200px !important; object-fit: cover !important; display: block !important; }
-        /* Hide html5-qrcode's own header bar and file-upload UI */
         #scanner-container > div > span,
         #scanner-container > div > img,
         #html5-qrcode-button-file-selection,
         #html5-qrcode-anchor-scan-type-change { display: none !important; }
         .close-camera-btn { background: #ef4444; color: white; width: 100%; padding: 0.875rem; font-size: 1rem; font-weight: bold; border: none; cursor: pointer; }
 
-        .product-item { background: linear-gradient(to right, #fef3c7, #fef08a); padding: 1.5rem; border-radius: 0.5rem; border: 2px solid #fde047; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
-        .product-info h3 { font-size: 1.25rem; font-weight: bold; margin: 0 0 0.5rem 0; }
+        /* Admin */
+        .product-item { background: linear-gradient(to right, #fef3c7, #fef08a); padding: 1.25rem; border-radius: 0.5rem; border: 2px solid #fde047; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .product-info h3 { font-size: 1.1rem; font-weight: bold; margin: 0 0 0.25rem 0; }
         .product-price { color: #9333ea; font-weight: bold; }
-        .product-barcode { font-size: 0.75rem; color: #6b7280; font-family: monospace; }
-        .product-actions { display: flex; gap: 0.5rem; }
+        .product-barcode { font-size: 0.7rem; color: #6b7280; font-family: monospace; }
+        .product-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
         .btn-print { background: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="container">
+
+        <div class="shop-header">
+            <h1>🏪 Karim's Corner Shop</h1>
+            <p>Point of Sale System</p>
+        </div>
+
         <div class="mode-toggle">
             <button class="btn-mode active" onclick="switchMode('cashier')">🛒 Cashier</button>
             <button class="btn-mode inactive" onclick="switchMode('admin')">⚙️ Admin</button>
@@ -69,28 +106,28 @@
             <div class="card">
                 <h2>🔍 Scan Items</h2>
                 <div class="input-group">
-                    <label style="font-weight: bold;">Enter barcode or use camera:</label>
-                    <input type="text" id="barcode-input" placeholder="e.g. 5000000000000" maxlength="14"
+                    <label style="font-weight:bold;color:#374151;">Enter barcode or scan with camera:</label>
+                    <input type="text" id="barcode-input" placeholder="e.g. 5000000000000" maxlength="50"
                            onkeypress="if(event.key==='Enter') scanBarcode()">
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="btn btn-scan btn-large" onclick="scanBarcode()">Scan</button>
-                        <button class="btn btn-scan btn-large" onclick="toggleCamera()" id="camera-btn">📷 Camera</button>
+                    <div style="display:flex;gap:0.5rem;">
+                        <button class="btn btn-scan btn-large" onclick="scanBarcode()">Manual Entry</button>
+                        <button class="btn btn-scan btn-large" onclick="toggleCamera()" id="camera-btn">Scan</button>
                     </div>
                 </div>
                 <div id="camera-section" class="camera-section hidden">
                     <div id="scanner-container"></div>
-                    <button class="close-camera-btn" onclick="stopCamera()">✕ Close Camera</button>
+                    <button class="close-camera-btn" onclick="stopCamera()">✕ Close Scanner</button>
                 </div>
             </div>
 
             <div class="card">
                 <h2>🛍️ Basket</h2>
                 <div id="basket-items"></div>
-                <div id="empty-basket" class="empty-message">Scan items to add them</div>
+                <div id="empty-basket" class="empty-message">No items scanned yet</div>
                 <div id="total-section" class="total-section hidden">
-                    <div style="color:#6b7280; margin-bottom:0.5rem;">Total</div>
+                    <div style="color:#6b7280;margin-bottom:0.25rem;font-size:0.9rem;">TOTAL</div>
                     <div class="total-amount" id="total-display">£0.00</div>
-                    <button class="btn btn-proceed btn-large" onclick="goToPayment()">Proceed to Payment</button>
+                    <button class="btn btn-proceed btn-large" onclick="goToPayment()">Proceed to Payment →</button>
                 </div>
             </div>
         </div>
@@ -99,25 +136,42 @@
         <div id="payment" class="content">
             <div class="card" style="text-align:center;">
                 <h2>💳 Payment</h2>
-                <div style="background:linear-gradient(to right,#f3e8ff,#fce7f3);padding:1.5rem;border-radius:0.75rem;margin-bottom:2rem;">
-                    <div style="color:#6b7280;margin-bottom:0.5rem;">Amount Due</div>
+                <div style="background:linear-gradient(to right,#f3e8ff,#fce7f3);padding:1.5rem;border-radius:0.75rem;margin-bottom:1.5rem;">
+                    <div style="color:#6b7280;margin-bottom:0.25rem;font-size:0.9rem;">AMOUNT DUE</div>
                     <div class="total-amount" id="payment-total">£0.00</div>
                 </div>
-                <div style="font-size:1.25rem;font-weight:bold;color:#1f2937;margin-bottom:1rem;">Select Payment</div>
-                <div id="payment-buttons" style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:2rem;"></div>
-                <button class="btn btn-back btn-large" onclick="backToBasket()">Back</button>
+
+                <!-- Pre-payment buttons -->
+                <div id="pre-payment">
+                    <div style="font-size:1rem;font-weight:bold;color:#374151;margin-bottom:1rem;">Cash Tendered</div>
+                    <div id="payment-buttons" style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.75rem;margin-bottom:0.75rem;"></div>
+                    <button class="btn-custom" onclick="customPayment()">✏️ Custom Amount</button>
+                    <button class="btn btn-back btn-large" style="margin-top:0.75rem;" onclick="backToBasket()">← Back</button>
+                </div>
+
+                <!-- Post-payment: change + receipt -->
+                <div id="post-payment" class="hidden">
+                    <div class="change-display">
+                        <div class="change-label">CHANGE DUE</div>
+                        <div class="change-amount" id="change-display">£0.00</div>
+                        <div class="tendered-label" id="tendered-display"></div>
+                    </div>
+                    <div class="receipt" id="receipt-area"></div>
+                    <button class="btn-print-receipt" onclick="printReceipt()">🖨️ Print Receipt</button>
+                    <button class="btn-new-sale" onclick="newSale()">✅ New Sale</button>
+                </div>
             </div>
         </div>
 
         <!-- Admin -->
         <div id="admin" class="content">
             <div class="card">
-                <h2>Add Product</h2>
+                <h2>➕ Add Product</h2>
                 <div class="input-group">
                     <input type="text"   id="product-name"    placeholder="Product Name">
-                    <input type="text"   id="product-barcode" placeholder="Barcode (optional)">
+                    <input type="text"   id="product-barcode" placeholder="Barcode / QR value (optional)">
                     <input type="number" id="product-price"   placeholder="Price (£)" step="0.01">
-                    <button class="btn btn-add btn-large" onclick="addProduct()">➕ Add</button>
+                    <button class="btn btn-add btn-large" onclick="addProduct()">Add Product</button>
                 </div>
             </div>
             <div class="card">
@@ -128,39 +182,39 @@
     </div>
 
     <script>
+        const SHOP_NAME = "Karim's Corner Shop";
+
         let products = JSON.parse(localStorage.getItem('tillProducts')) || [
             { id: 1, name: 'Milk',   price: 1.50, barcode: '5000000000000' },
             { id: 2, name: 'Bread',  price: 1.20, barcode: '5000000000001' },
             { id: 3, name: 'Apples', price: 0.80, barcode: '5000000000002' },
         ];
 
-        let basket      = [];
+        let basket       = [];
         let cameraActive = false;
         let html5QrCode  = null;
+        let lastSaleData = null;
 
-        // Audio beep
+        // ── Audio ──────────────────────────────────────────────
         function playBeep() {
             try {
                 const ctx  = new (window.AudioContext || window.webkitAudioContext)();
                 const osc  = ctx.createOscillator();
                 const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.frequency.value = 800;
-                osc.type = 'sine';
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.frequency.value = 800; osc.type = 'sine';
                 gain.gain.setValueAtTime(0.3, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
-                osc.start(ctx.currentTime);
-                osc.stop(ctx.currentTime + 0.12);
+                osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.12);
             } catch (_) {}
         }
 
-        // Mode toggle
+        // ── Mode ───────────────────────────────────────────────
         function switchMode(mode) {
             document.querySelectorAll('.btn-mode').forEach(btn => {
                 const mine = (mode === 'cashier' && btn.textContent.includes('Cashier'))
                           || (mode === 'admin'   && btn.textContent.includes('Admin'));
-                btn.classList.toggle('active',   mine);
+                btn.classList.toggle('active', mine);
                 btn.classList.toggle('inactive', !mine);
             });
             document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
@@ -168,45 +222,33 @@
             if (mode === 'admin') renderProducts();
         }
 
-        // Camera
-        function toggleCamera() {
-            cameraActive ? stopCamera() : startCamera();
-        }
+        // ── Camera ─────────────────────────────────────────────
+        function toggleCamera() { cameraActive ? stopCamera() : startCamera(); }
 
         async function startCamera() {
             try {
                 html5QrCode = new Html5Qrcode('scanner-container');
                 document.getElementById('camera-section').classList.remove('hidden');
-                document.getElementById('camera-btn').textContent = '📷 Stop';
+                document.getElementById('camera-btn').textContent = 'Stop';
                 cameraActive = true;
-
                 await html5QrCode.start(
                     { facingMode: 'environment' },
-                    {
-                        fps: 15,
-                        qrbox: { width: 260, height: 100 },
-                        aspectRatio: 1.6,
-                        formatsToSupport: [
-                            Html5QrcodeSupportedFormats.EAN_13,
-                            Html5QrcodeSupportedFormats.EAN_8,
-                            Html5QrcodeSupportedFormats.UPC_A,
-                            Html5QrcodeSupportedFormats.UPC_E,
-                            Html5QrcodeSupportedFormats.CODE_128,
-                            Html5QrcodeSupportedFormats.CODE_39,
-                            Html5QrcodeSupportedFormats.QR_CODE,
-                        ]
+                    { fps: 15, qrbox: { width: 260, height: 100 }, aspectRatio: 1.6,
+                      formatsToSupport: [
+                          Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8,
+                          Html5QrcodeSupportedFormats.UPC_A,  Html5QrcodeSupportedFormats.UPC_E,
+                          Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE_39,
+                          Html5QrcodeSupportedFormats.QR_CODE,
+                      ]
                     },
                     (decodedText) => {
                         stopCamera();
                         document.getElementById('barcode-input').value = decodedText;
                         scanBarcode();
                     },
-                    () => {}   // per-frame "nothing found" — normal, ignore
+                    () => {}
                 );
-            } catch (err) {
-                alert('Camera error: ' + err.message);
-                stopCamera();
-            }
+            } catch (err) { alert('Camera error: ' + err.message); stopCamera(); }
         }
 
         async function stopCamera() {
@@ -217,41 +259,71 @@
             }
             document.getElementById('scanner-container').innerHTML = '';
             document.getElementById('camera-section').classList.add('hidden');
-            document.getElementById('camera-btn').textContent = '📷 Camera';
+            document.getElementById('camera-btn').textContent = 'Scan';
             cameraActive = false;
         }
 
-        // Barcode lookup
-        function scanBarcode() {
+        // ── Barcode lookup ─────────────────────────────────────
+        async function scanBarcode() {
             const barcode = document.getElementById('barcode-input').value.trim();
             if (!barcode) return;
-            const product = products.find(p => p.barcode === barcode);
-            if (product) {
+
+            const local = products.find(p => p.barcode === barcode);
+            if (local) {
                 playBeep();
-                basket.push({ ...product, cartId: Date.now() });
+                basket.push({ ...local, cartId: Date.now() });
                 document.getElementById('barcode-input').value = '';
                 renderBasket();
-            } else {
-                alert('Product not found: ' + barcode);
+                return;
+            }
+
+            document.getElementById('barcode-input').placeholder = 'Looking up product…';
+            document.getElementById('barcode-input').disabled = true;
+            try {
+                const res  = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+                const data = await res.json();
+                if (data.status === 1 && data.product) {
+                    const p = data.product;
+                    const name     = p.product_name || p.abbreviated_product_name || p.generic_name || 'Unknown Product';
+                    const brand    = p.brands ? ' (' + p.brands.split(',')[0].trim() + ')' : '';
+                    const fullName = name + brand;
+                    const priceStr = prompt(`Found: ${fullName}\n\nEnter price (£):`, '');
+                    if (priceStr === null) return;
+                    const price = parseFloat(priceStr);
+                    if (isNaN(price) || price <= 0) { alert('Invalid price — item not added.'); return; }
+                    const newId = Math.max(...products.map(p => p.id), 0) + 1;
+                    const newProduct = { id: newId, name: fullName, price, barcode };
+                    products.push(newProduct);
+                    localStorage.setItem('tillProducts', JSON.stringify(products));
+                    playBeep();
+                    basket.push({ ...newProduct, cartId: Date.now() });
+                    document.getElementById('barcode-input').value = '';
+                    renderBasket();
+                } else {
+                    alert('Product not found: ' + barcode);
+                }
+            } catch (err) {
+                alert('Network error — check connection.\n' + err.message);
+            } finally {
+                document.getElementById('barcode-input').placeholder = 'e.g. 5000000000000';
+                document.getElementById('barcode-input').disabled = false;
+                document.getElementById('barcode-input').focus();
             }
         }
 
-        // Basket
+        // ── Basket ─────────────────────────────────────────────
         function renderBasket() {
             const container    = document.getElementById('basket-items');
             const emptyMsg     = document.getElementById('empty-basket');
             const totalSection = document.getElementById('total-section');
-
             if (basket.length === 0) {
                 container.innerHTML = '';
                 emptyMsg.classList.remove('hidden');
                 totalSection.classList.add('hidden');
                 return;
             }
-
             emptyMsg.classList.add('hidden');
             totalSection.classList.remove('hidden');
-
             container.innerHTML = basket.map(item => `
                 <div class="basket-item">
                     <div>
@@ -261,7 +333,6 @@
                     <button class="btn-remove" onclick="removeItem(${item.cartId})">Remove</button>
                 </div>
             `).join('');
-
             const total = basket.reduce((s, i) => s + i.price, 0);
             document.getElementById('total-display').textContent = '£' + total.toFixed(2);
         }
@@ -271,13 +342,15 @@
             renderBasket();
         }
 
-        // Payment
+        // ── Payment ────────────────────────────────────────────
         function goToPayment() {
             const total = basket.reduce((s, i) => s + i.price, 0);
             document.getElementById('payment-total').textContent = '£' + total.toFixed(2);
             const opts = [5, 10, 20, 50].filter(o => o >= Math.ceil(total));
             document.getElementById('payment-buttons').innerHTML =
                 opts.map(amt => `<button class="btn-payment" onclick="processCash(${amt})">£${amt}</button>`).join('');
+            document.getElementById('pre-payment').classList.remove('hidden');
+            document.getElementById('post-payment').classList.add('hidden');
             document.getElementById('cashier').classList.remove('active');
             document.getElementById('payment').classList.add('active');
         }
@@ -287,16 +360,140 @@
             document.getElementById('cashier').classList.add('active');
         }
 
-        function processCash(amount) {
-            const total  = basket.reduce((s, i) => s + i.price, 0);
-            const change = (amount - total).toFixed(2);
-            alert('Payment successful!\nChange: £' + change);
-            basket = [];
-            renderBasket();
-            backToBasket();
+        function customPayment() {
+            const total = basket.reduce((s, i) => s + i.price, 0);
+            const input = prompt(`Amount due: £${total.toFixed(2)}\n\nEnter cash amount (£):`);
+            if (input === null) return;
+            const amount = parseFloat(input);
+            if (isNaN(amount) || amount < total) {
+                alert('Amount must be at least £' + total.toFixed(2));
+                return;
+            }
+            processCash(amount);
         }
 
-        // Admin
+        function processCash(amount) {
+            const total  = basket.reduce((s, i) => s + i.price, 0);
+            const change = amount - total;
+
+            lastSaleData = {
+                items: [...basket],
+                total,
+                tendered: amount,
+                change,
+                time: new Date()
+            };
+
+            // Show change
+            document.getElementById('change-display').textContent = '£' + change.toFixed(2);
+            document.getElementById('tendered-display').textContent =
+                `Cash tendered: £${amount.toFixed(2)}  |  Total: £${total.toFixed(2)}`;
+
+            // Build receipt
+            buildReceipt(lastSaleData);
+
+            document.getElementById('pre-payment').classList.add('hidden');
+            document.getElementById('post-payment').classList.remove('hidden');
+
+            playBeep();
+        }
+
+        function buildReceipt(sale) {
+            const dt = sale.time;
+            const dateStr = dt.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+            const timeStr = dt.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+            const itemCount = sale.items.length;
+
+            let rows = sale.items.map(i =>
+                `<div class="receipt-row">
+                    <span>${i.name.length > 22 ? i.name.slice(0,22)+'…' : i.name}</span>
+                    <span>£${i.price.toFixed(2)}</span>
+                </div>`
+            ).join('');
+
+            document.getElementById('receipt-area').innerHTML = `
+                <div class="receipt-header">
+                    <div class="receipt-shop">${SHOP_NAME.toUpperCase()}</div>
+                    <div class="receipt-sub">Thank you for shopping with us</div>
+                    <div class="receipt-sub" style="margin-top:0.25rem;">${dateStr} &nbsp; ${timeStr}</div>
+                </div>
+                <hr class="receipt-divider">
+                ${rows}
+                <hr class="receipt-divider">
+                <div class="receipt-row bold">
+                    <span>${itemCount} ITEM${itemCount !== 1 ? 'S' : ''}</span>
+                    <span></span>
+                </div>
+                <div class="receipt-row total">
+                    <span>TOTAL</span>
+                    <span>£${sale.total.toFixed(2)}</span>
+                </div>
+                <div class="receipt-row">
+                    <span>CASH</span>
+                    <span>£${sale.tendered.toFixed(2)}</span>
+                </div>
+                <div class="receipt-row change">
+                    <span>CHANGE</span>
+                    <span>£${sale.change.toFixed(2)}</span>
+                </div>
+                <hr class="receipt-divider">
+                <div class="receipt-footer">
+                    <div>*** THANK YOU ***</div>
+                    <div style="margin-top:0.25rem;">Please keep receipt as proof of purchase</div>
+                    <div style="margin-top:0.25rem;">Powered by Karim's Corner Shop POS</div>
+                </div>
+            `;
+        }
+
+        function printReceipt() {
+            if (!lastSaleData) return;
+            const dt       = lastSaleData.time;
+            const dateStr  = dt.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+            const timeStr  = dt.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+            const itemRows = lastSaleData.items.map(i =>
+                `<tr><td>${i.name}</td><td style="text-align:right">£${i.price.toFixed(2)}</td></tr>`
+            ).join('');
+
+            const pw = window.open('', '', 'width=320,height=600');
+            pw.document.write(`
+                <html><head><title>Receipt</title><style>
+                    body { font-family: 'Courier New', monospace; font-size: 12px; padding: 1rem; max-width: 280px; margin: 0 auto; }
+                    h1 { text-align: center; font-size: 14px; margin-bottom: 0; }
+                    .sub { text-align: center; font-size: 10px; color: #666; }
+                    hr { border: none; border-top: 1px dashed #999; margin: 6px 0; }
+                    table { width: 100%; }
+                    td { padding: 1px 0; }
+                    .total-row td { font-weight: bold; font-size: 13px; border-top: 1px dashed #999; padding-top: 4px; }
+                    .change-row td { color: green; font-weight: bold; }
+                    .footer { text-align: center; font-size: 10px; color: #666; margin-top: 8px; }
+                </style></head><body>
+                <h1>${SHOP_NAME.toUpperCase()}</h1>
+                <p class="sub">Thank you for shopping with us</p>
+                <p class="sub">${dateStr} &nbsp; ${timeStr}</p>
+                <hr>
+                <table>${itemRows}</table>
+                <table>
+                    <tr class="total-row"><td>TOTAL</td><td style="text-align:right">£${lastSaleData.total.toFixed(2)}</td></tr>
+                    <tr><td>CASH</td><td style="text-align:right">£${lastSaleData.tendered.toFixed(2)}</td></tr>
+                    <tr class="change-row"><td>CHANGE</td><td style="text-align:right">£${lastSaleData.change.toFixed(2)}</td></tr>
+                </table>
+                <hr>
+                <p class="footer">*** THANK YOU ***<br>Please keep as proof of purchase</p>
+                <script>setTimeout(()=>window.print(),300)<\/script>
+                </body></html>
+            `);
+            pw.document.close();
+        }
+
+        function newSale() {
+            basket = [];
+            lastSaleData = null;
+            renderBasket();
+            document.getElementById('payment').classList.remove('active');
+            document.getElementById('cashier').classList.add('active');
+        }
+
+        // ── Admin ──────────────────────────────────────────────
         function addProduct() {
             const name    = document.getElementById('product-name').value.trim();
             const barcode = document.getElementById('product-barcode').value.trim()
@@ -322,11 +519,11 @@
             const pw = window.open('', '', 'width=400,height=300');
             pw.document.write(
                 '<html><head><title>Barcode</title>' +
-                '<style>body{text-align:center;padding:20px}</style></head>' +
+                '<style>body{text-align:center;padding:20px;font-family:sans-serif}</style></head>' +
                 '<body><h3>' + product.name + '</h3><svg id="bc"></svg>' +
-                '<p>£' + product.price.toFixed(2) + '</p>' +
+                '<p style="margin-top:0.5rem">£' + product.price.toFixed(2) + '</p>' +
                 '<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"><\/script>' +
-                '<script>JsBarcode("#bc","' + product.barcode + '");<\/script>' +
+                '<script>JsBarcode("#bc","' + product.barcode + '",{displayValue:true});<\/script>' +
                 '</body></html>'
             );
             pw.document.close();
@@ -334,7 +531,9 @@
         }
 
         function renderProducts() {
-            document.getElementById('products-list').innerHTML = products.map(p => `
+            document.getElementById('products-list').innerHTML = products.length === 0
+                ? '<p style="color:#9ca3af;text-align:center;padding:1rem;">No products yet</p>'
+                : products.map(p => `
                 <div class="product-item">
                     <div class="product-info">
                         <h3>${p.name}</h3>

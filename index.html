@@ -170,9 +170,62 @@
         .qty-step-num   { font-size: 2.5rem; font-weight: 900; color: #1f2937; min-width: 48px; }
         .qty-modal-total { background: linear-gradient(135deg,#fef9c3,#fef3c7); border: 3px solid #fde047; border-radius: 1rem; padding: 0.6rem; margin-bottom: 1.25rem; font-size: 1.1rem; font-weight: 900; color: #92400e; }
         .qty-modal-actions { display: flex; gap: 0.75rem; }
+
+        /* Cashier login screen */
+        .login-screen { position: fixed; inset: 0; background: linear-gradient(160deg,#ff9a9e 0%,#fecfef 25%,#a8edea 55%,#fed6e3 80%,#ffecd2 100%); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; overflow-y: auto; }
+        .login-screen.hidden { display: none; }
+        .login-box { background: white; border-radius: 2rem; padding: 2rem; width: 100%; max-width: 420px; border: 4px solid #fbbf24; box-shadow: 0 20px 60px rgba(0,0,0,0.15); animation: popIn 0.3s ease-out; }
+        .login-title { font-size: 1.5rem; font-weight: 900; text-align: center; color: #1f2937; margin-bottom: 0.25rem; }
+        .login-sub { font-size: 0.85rem; font-weight: 700; text-align: center; color: #6b7280; margin-bottom: 1.5rem; }
+        .cashier-grid { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.25rem; }
+        .cashier-btn { display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1.1rem; border-radius: 1.25rem; border: 3px solid; cursor: pointer; font-family: inherit; font-weight: 900; font-size: 1rem; transition: transform 0.1s; text-align: left; }
+        .cashier-btn:active { transform: scale(0.97); }
+        .cashier-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+        .cashier-name { flex: 1; }
+        .cashier-arrow { opacity: 0.5; font-size: 1.2rem; }
+        .cashier-delete-btn { width: 30px; height: 30px; border-radius: 50%; border: none; background: #fecaca; color: #ef4444; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .add-cashier-form { border-top: 3px dashed #e5e7eb; padding-top: 1.25rem; }
+        .add-cashier-form input { width: 100%; margin-bottom: 0.75rem; }
+        .login-shop-header { text-align: center; margin-bottom: 1.5rem; }
+        .login-shop-header h1 { font-size: 1.6rem; font-weight: 900; background: linear-gradient(to right,#f43f5e,#f97316,#eab308,#22c55e,#3b82f6,#a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .login-shop-header p { color: rgba(0,0,0,0.4); font-size: 0.8rem; font-weight: 700; }
+
+        /* Cashier status badge */
+        .cashier-badge { display: flex; align-items: center; gap: 0.6rem; background: white; border: 3px solid #4ade80; border-radius: 2rem; padding: 0.5rem 1rem; margin-bottom: 1rem; box-shadow: 0 3px 0 #22c55e; }
+        .cashier-badge-dot { width: 10px; height: 10px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 6px #22c55e; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        .cashier-badge-name { font-weight: 900; font-size: 0.95rem; color: #1f2937; }
+        .cashier-badge-status { font-size: 0.75rem; font-weight: 700; color: #16a34a; margin-left: auto; text-transform: uppercase; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
+
+    <!-- ── Cashier Login Screen ─────────────────────────── -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-shop-header">
+            <h1>🏪 Karim's Corner Shop</h1>
+            <p>Point of Sale System</p>
+        </div>
+        <div class="login-box">
+            <div style="font-size:2.5rem;text-align:center;margin-bottom:0.5rem;">👋</div>
+            <div class="login-title">Who's at the till today?</div>
+            <div class="login-sub">Select your name to start</div>
+
+            <div class="cashier-grid" id="cashier-grid">
+                <!-- populated by JS -->
+            </div>
+
+            <div class="add-cashier-form">
+                <div style="font-weight:900;font-size:0.9rem;color:#374151;margin-bottom:0.6rem;">➕ Add New Cashier</div>
+                <input type="text" id="new-cashier-input" placeholder="Enter name e.g. Karim"
+                       onkeypress="if(event.key==='Enter') addCashier()">
+                <button class="modal-btn-primary" style="width:100%;" onclick="addCashier()">Add Cashier</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Main App ─────────────────────────────────────── -->
+    <div id="app" class="hidden">
     <div class="container">
 
         <div class="shop-header">
@@ -187,6 +240,14 @@
 
         <!-- Cashier -->
         <div id="cashier" class="content active">
+
+            <!-- Cashier status badge -->
+            <div class="cashier-badge">
+                <div class="cashier-badge-dot"></div>
+                <span class="cashier-badge-name" id="cashier-badge-name">—</span>
+                <span class="cashier-badge-status">● Operating</span>
+            </div>
+
             <div class="card card-scan">
                 <h2>🔍 Scan Items</h2>
                 <div class="input-group">
@@ -305,12 +366,18 @@
                     <button class="btn btn-add btn-large" onclick="addProduct()">Add Product</button>
                 </div>
             </div>
+            <div class="card" style="border:3px solid #818cf8;box-shadow:0 6px 0 #6366f1;">
+                <h2>👷 Change Cashier</h2>
+                <p style="color:#6b7280;font-weight:700;font-size:0.9rem;margin-bottom:1rem;">Currently: <span id="admin-cashier-name" style="color:#7c3aed;font-weight:900;"></span></p>
+                <button class="btn btn-large" style="background:linear-gradient(135deg,#818cf8,#6366f1);color:white;border-bottom:4px solid #4338ca;" onclick="changeCashier()">🔄 Switch Cashier</button>
+            </div>
             <div class="card">
                 <h2>📦 Products</h2>
                 <div id="products-list"></div>
             </div>
         </div>
     </div>
+    </div> <!-- end #app -->
 
     <!-- Qty popup (catalog quick-add) -->
     <div class="modal-overlay hidden" id="qty-modal">
@@ -382,6 +449,77 @@
 
     <script>
         const SHOP_NAME = "Karim's Corner Shop";
+
+        // ── Cashier management ────────────────────────────────
+        const CASHIER_COLOURS = [
+            { bg:'#fef3c7', border:'#fbbf24', avatar:'#fef08a', text:'#92400e' },
+            { bg:'#dcfce7', border:'#4ade80', avatar:'#bbf7d0', text:'#14532d' },
+            { bg:'#eff6ff', border:'#93c5fd', avatar:'#bfdbfe', text:'#1e3a8a' },
+            { bg:'#fdf4ff', border:'#d8b4fe', avatar:'#f3e8ff', text:'#581c87' },
+            { bg:'#fff1f2', border:'#fda4af', avatar:'#ffe4e6', text:'#881337' },
+            { bg:'#fff7ed', border:'#fb923c', avatar:'#ffedd5', text:'#7c2d12' },
+        ];
+
+        let cashiers      = JSON.parse(localStorage.getItem('tillCashiers')) || ['Zayn', 'Zara'];
+        let currentCashier = null;
+
+        function saveCashiers() { localStorage.setItem('tillCashiers', JSON.stringify(cashiers)); }
+
+        function getInitials(name) {
+            return name.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+        }
+
+        function renderCashierGrid() {
+            const grid = document.getElementById('cashier-grid');
+            if (cashiers.length === 0) {
+                grid.innerHTML = '<p style="text-align:center;color:#9ca3af;font-weight:700;padding:0.5rem 0;">No cashiers yet — add one below</p>';
+                return;
+            }
+            grid.innerHTML = cashiers.map((name, i) => {
+                const c = CASHIER_COLOURS[i % CASHIER_COLOURS.length];
+                return `
+                <button class="cashier-btn" style="background:${c.bg};border-color:${c.border};color:${c.text};"
+                        onclick="selectCashier('${name.replace(/'/g,"\\'")}')">
+                    <div class="cashier-avatar" style="background:${c.avatar};">${getInitials(name)}</div>
+                    <span class="cashier-name">${name}</span>
+                    <span class="cashier-arrow">›</span>
+                    <button class="cashier-delete-btn" onclick="event.stopPropagation();removeCashier('${name.replace(/'/g,"\\'")}')">✕</button>
+                </button>`;
+            }).join('');
+        }
+
+        function addCashier() {
+            const name = document.getElementById('new-cashier-input').value.trim();
+            if (!name) { document.getElementById('new-cashier-input').focus(); return; }
+            if (cashiers.includes(name)) { document.getElementById('new-cashier-input').select(); return; }
+            cashiers.push(name);
+            saveCashiers();
+            document.getElementById('new-cashier-input').value = '';
+            renderCashierGrid();
+        }
+
+        function removeCashier(name) {
+            cashiers = cashiers.filter(c => c !== name);
+            saveCashiers();
+            renderCashierGrid();
+        }
+
+        function selectCashier(name) {
+            currentCashier = name;
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+            document.getElementById('cashier-badge-name').textContent = '👤 ' + name;
+            document.getElementById('admin-cashier-name').textContent = name;
+        }
+
+        function changeCashier() {
+            document.getElementById('app').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            renderCashierGrid();
+        }
+
+        // Init login screen
+        renderCashierGrid();
 
         // ── Catalog (pre-loaded categories) ───────────────────
         const CATALOG = {

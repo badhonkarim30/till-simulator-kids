@@ -349,9 +349,122 @@
             animation: pulse 1.5s ease-in-out infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        #camera-container {
+            width: 100%;
+            max-width: 100%;
+            margin-top: 1rem;
+            background: #000;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-height: 40vh;
+            object-fit: cover;
+            filter: brightness(1.1);
+        }
+
+        .scanner-overlay {
+            position: relative;
+            width: 100%;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+
+        .scanner-frame {
+            position: relative;
+            width: 80%;
+            height: 150px;
+            border: 3px solid #10b981;
+            border-radius: 0.5rem;
+            background: rgba(16, 185, 129, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scanner-frame::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #10b981, transparent);
+            top: 50%;
+            animation: scanLine 2s infinite;
+        }
+
+        @keyframes scanLine {
+            0% { transform: translateY(-60px); }
+            50% { transform: translateY(0); }
+            100% { transform: translateY(60px); }
+        }
+
+        .crosshair {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #10b981;
+        }
+
+        .crosshair::before,
+        .crosshair::after {
+            content: '';
+            position: absolute;
+            background: #10b981;
+        }
+
+        .crosshair::before {
+            width: 100%;
+            height: 2px;
+            top: 50%;
+            left: 0;
+        }
+
+        .crosshair::after {
+            width: 2px;
+            height: 100%;
+            left: 50%;
+            top: 0;
+        }
+
+        .scanner-info {
+            color: #10b981;
+            font-weight: bold;
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            video {
+                max-height: 35vh;
+            }
+            
+            .scanner-frame {
+                width: 90%;
+                height: 120px;
+            }
+        }
+
+        @media (max-height: 800px) {
+            video {
+                max-height: 25vh;
+            }
+
+            .scanner-overlay {
+                min-height: 200px;
+            }
+
+            .scanner-frame {
+                height: 100px;
+            }
         }
 
         .barcode-input-section {
@@ -463,9 +576,15 @@
                             <button onclick="toggleCamera()" id="camera-btn">📷 Camera</button>
                         </div>
                     </div>
-                    <div id="camera-container" class="hidden" style="margin-top: 1rem;">
-                        <video id="video" style="width: 100%; border-radius: 0.5rem; border: 2px solid #3b82f6;"></video>
-                        <button onclick="stopCamera()" style="width: 100%; padding: 0.75rem; background: #ef4444; color: white; border: none; border-radius: 0.5rem; font-weight: bold; margin-top: 0.5rem;">Close Camera</button>
+                    <div id="camera-container" class="hidden">
+                        <div class="scanner-overlay">
+                            <video id="video" playsinline style="position: absolute; width: 100%; height: 100%; object-fit: cover; z-index: -1;"></video>
+                            <div class="scanner-frame">
+                                <div class="crosshair"></div>
+                                <div class="scanner-info">Align barcode here</div>
+                            </div>
+                        </div>
+                        <button onclick="stopCamera()" style="width: 100%; padding: 1rem; background: #ef4444; color: white; border: none; border-radius: 0.5rem; font-weight: bold; margin-top: 0.5rem; font-size: 1.125rem;">Close Camera</button>
                     </div>
                     <div id="scan-status"></div>
                 </div>

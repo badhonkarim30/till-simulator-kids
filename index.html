@@ -361,16 +361,13 @@
 
         video {
             width: 100%;
-            height: auto;
+            height: 100%;
             display: block;
             position: absolute;
-            top: 50%;
+            top: 0;
             left: 0;
-            transform: translateY(-50%);
             object-fit: cover;
             filter: brightness(1.1);
-            min-height: 100%;
-            z-index: 1;
         }
 
         .scanner-overlay {
@@ -599,10 +596,9 @@
                     </div>
                     <div id="camera-container" class="hidden">
                         <div class="scanner-overlay">
-                            <video id="video" playsinline style="position: absolute; width: 100%; height: 100%; object-fit: cover; z-index: -1;"></video>
+                            <video id="video" playsinline></video>
                             <div class="scanner-frame">
                                 <div class="crosshair"></div>
-                                <div class="scanner-info">Align barcode here</div>
                             </div>
                         </div>
                         <button onclick="stopCamera()" style="width: 100%; padding: 1rem; background: #ef4444; color: white; border: none; border-radius: 0.5rem; font-weight: bold; margin-top: 0.5rem; font-size: 1.125rem;">Close Camera</button>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supermarket Till</title>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-    <script src="https://unpkg.com/@zxing/library@0.20.0"></script>
+    <script src="https://unpkg.com/@zxing/library@0.20.0/umd/index.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 1rem; }
@@ -37,8 +37,8 @@
         .total-amount { font-size: 3rem; font-weight: black; background: linear-gradient(to right, #9333ea, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 1.5rem; }
         .empty-message { text-align: center; color: #9ca3af; font-size: 1.25rem; padding: 2rem; }
         .hidden { display: none; }
-        video { width: 100%; max-height: 400px; border-radius: 0.5rem; border: 2px solid #3b82f6; margin-bottom: 1rem; }
-        .camera-section { background: #000; border-radius: 0.5rem; padding: 1rem; }
+        video { width: 100%; height: 220px; object-fit: cover; border-radius: 0.5rem; border: 2px solid #3b82f6; margin-bottom: 1rem; display: block; }
+        .camera-section { background: #000; border-radius: 0.5rem; padding: 0.75rem; }
         .product-item { background: linear-gradient(to right, #fef3c7, #fef08a); padding: 1.5rem; border-radius: 0.5rem; border: 2px solid #fde047; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
         .product-info h3 { font-size: 1.25rem; font-weight: bold; margin: 0 0 0.5rem 0; }
         .product-price { color: #9333ea; font-weight: bold; }
@@ -127,7 +127,6 @@
         
         let basket = [];
         let cameraActive = false;
-        let cameraStream = null;
         let codeReader = null;
 
         function playBeep() {
@@ -163,36 +162,35 @@
         }
 
         async function startCamera() {
-            try {
-                console.log('Requesting camera...');
-                cameraStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
-                });
+            const ZXing = window.ZXing;
+            if (!ZXing) {
+                alert('Barcode library failed to load. Please refresh and try again.');
+                return;
+            }
 
-                const video = document.getElementById('video');
-                video.srcObject = cameraStream;
+            try {
+                codeReader = new ZXing.BrowserMultiFormatReader();
+
+                const videoEl = document.getElementById('video');
                 document.getElementById('camera-section').classList.remove('hidden');
                 document.getElementById('camera-btn').textContent = '📷 Stop';
                 cameraActive = true;
 
-                // Start barcode detection
-                const ZXing = window.ZXing;
-                if (ZXing) {
-                    codeReader = new ZXing.BrowserMultiFormatReader();
-                    console.log('ZXing initialized, starting decode...');
-                    codeReader.decodeFromVideoElement(video, (result, err) => {
+                // decodeFromConstraints handles getUserMedia and srcObject internally
+                await codeReader.decodeFromConstraints(
+                    { video: { facingMode: { ideal: 'environment' } } },
+                    videoEl,
+                    (result, err) => {
                         if (result) {
                             const barcode = result.getText();
-                            console.log('Barcode found:', barcode);
+                            stopCamera();
                             document.getElementById('barcode-input').value = barcode;
-                            setTimeout(() => scanBarcode(), 100);
+                            scanBarcode();
                         }
-                    });
-                } else {
-                    console.warn('ZXing library not loaded');
-                }
+                        // err fires on every frame with no barcode — that's normal, ignore it
+                    }
+                );
             } catch (err) {
-                console.error('Camera error:', err);
                 alert('Camera Error: ' + err.message);
                 stopCamera();
             }
@@ -200,11 +198,8 @@
 
         function stopCamera() {
             if (codeReader) {
-                codeReader.reset();
+                codeReader.reset(); // stops stream and clears video.srcObject
                 codeReader = null;
-            }
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
             }
             document.getElementById('camera-section').classList.add('hidden');
             document.getElementById('camera-btn').textContent = '📷 Camera';
